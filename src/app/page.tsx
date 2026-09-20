@@ -1,15 +1,25 @@
-export default function Home() {
-  return (
-    <main className="flex min-h-screen items-center justify-center">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold">
-          Python Learning Platform
-        </h1>
+import { redirect } from "next/navigation";
+import { getCurrentUser } from "@/lib/auth";
 
-        <p className="mt-4 text-muted-foreground">
-          Learn Python. Practice. Build.
-        </p>
-      </div>
-    </main>
-  );
+/**
+ * Root page — redirects to the appropriate destination based on auth status.
+ * Authenticated users go to their role dashboard.
+ * Unauthenticated users go to /login.
+ */
+export default async function Home() {
+  const user = await getCurrentUser();
+
+  if (!user) {
+    redirect("/login");
+  }
+
+  switch (user.role) {
+    case "ADMIN":
+      redirect("/admin");
+    case "TEACHER":
+      redirect("/teacher");
+    case "STUDENT":
+    default:
+      redirect("/student");
+  }
 }
