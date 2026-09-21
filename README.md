@@ -1,4 +1,4 @@
-# Python Learning Platform
+# codeWithFarhan
 
 A full-stack Python learning platform for structured lessons, coding homework, online Python practice, automated grading, progress tracking, and role-based management.
 
@@ -38,10 +38,10 @@ Progress Updated
 - TypeScript
 - Tailwind CSS
 - shadcn/ui
-- Base UI
 - Lucide Icons
 - Inter
 - Monaco Editor
+- Tiptap (Rich Text Editor)
 
 ### Backend
 - Next.js App Router
@@ -54,10 +54,6 @@ Progress Updated
 - Supabase PostgreSQL
 - Supabase Authentication
 - Supabase Storage
-
-### Validation & Forms
-- Zod
-- React Hook Form
 
 ### Code Execution
 - Python
@@ -82,6 +78,7 @@ Progress Updated
 - Session management
 - Protected routes
 - Server-side authorization
+- User Profile (Update Name, Change Password)
 
 ### Multi-Role Authentication
 
@@ -335,6 +332,7 @@ There is no separate `ProblemProgress` model.
 ### Dashboards
 
 **Student**
+- User Profile & Security
 - Available courses
 - Course progress
 - Completed lessons
@@ -342,6 +340,7 @@ There is no separate `ProblemProgress` model.
 - Recent submissions
 
 **Teacher**
+- User Profile & Security
 - Courses
 - Problems
 - Submissions
@@ -349,6 +348,7 @@ There is no separate `ProblemProgress` model.
 - Course analytics
 
 **Admin**
+- User Profile & Security
 - Platform statistics
 - Courses
 - Problems
@@ -613,6 +613,7 @@ Implemented:
 - Teacher monitoring
 - Admin management
 - User management
+- User Profile Management
 - Week-wise homework organization
 
 Remaining work is primarily focused on:

@@ -17,7 +17,7 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Python Learning Platform",
+  title: "codeWithFarhan",
   description:
     "A personal educational platform to learn Python through lessons and programming challenges.",
 };

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Python Learning Platform — Sign In",
+  title: "codeWithFarhan — Sign In",
   description: "Sign in or create an account to start learning Python.",
 };
 
