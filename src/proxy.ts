@@ -68,9 +68,10 @@ export async function proxy(request: NextRequest) {
     return NextResponse.redirect(new URL("/login", request.url));
   }
 
-  // Authenticated user trying to access login/signup → redirect to root
+  // Authenticated user with an active role trying to access login/signup → redirect to root
   // (root page redirects them to their role dashboard)
-  if (user && isAuthRoute) {
+  const hasActiveRole = request.cookies.has("active_role");
+  if (user && hasActiveRole && isAuthRoute) {
     return NextResponse.redirect(new URL("/", request.url));
   }
 

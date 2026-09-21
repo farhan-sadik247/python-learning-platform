@@ -1,8 +1,10 @@
 "use server";
 
 import { redirect } from "next/navigation";
+import { cookies } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
 import { prisma } from "@/lib/prisma";
+import { Prisma, type UserRole } from "@/generated/prisma/client";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -17,6 +19,8 @@ export type AuthErrors = {
 export type AuthActionState = {
   errors?: AuthErrors;
   message?: string;
+  requiresRoleSelection?: boolean;
+  availableRoles?: UserRole[];
 } | null;
 
 // ─── Validation helpers ───────────────────────────────────────────────────────
@@ -127,19 +131,32 @@ export async function signUpAction(
   // SECURITY: role is ALWAYS STUDENT for new records.
   // For existing records, the role is NOT changed — the pre-existing role is preserved.
   // A malicious user cannot change their role by re-signing up.
+  // Extract user ID to avoid TypeScript closure issues
+  const supabaseUserId = authData.user.id;
+
   try {
-    await prisma.user.upsert({
-      where: { email },
-      create: {
-        supabaseId: authData.user.id,
-        name,
-        email,
-        role: "STUDENT", // hardcoded for new users — never from client
-      },
-      update: {
-        // Only update the supabaseId — do NOT change name or role of existing users
-        supabaseId: authData.user.id,
-      },
+    await prisma.$transaction(async (tx) => {
+      const existingUserCount = await tx.user.count();
+      const isFirst = existingUserCount === 0;
+
+      await tx.user.upsert({
+        where: { email },
+        create: {
+          supabaseId: supabaseUserId,
+          name,
+          email,
+          roleAssignments: {
+            create: isFirst 
+              ? [{ role: "ADMIN" }, { role: "TEACHER" }, { role: "STUDENT" }]
+              : [{ role: "STUDENT" }]
+          }
+        },
+        update: {
+          supabaseId: supabaseUserId,
+        },
+      });
+    }, {
+      isolationLevel: Prisma.TransactionIsolationLevel.Serializable
     });
   } catch {
     // Profile upsert failed — sign out the partially-created Supabase user
@@ -160,7 +177,35 @@ export async function signUpAction(
     };
   }
 
-  redirect("/student");
+  // Session is created. Fetch roles or infer them.
+  // We know new users get STUDENT unless they are the first user.
+  const appUser = await prisma.user.findUnique({
+    where: { supabaseId: supabaseUserId },
+    include: { roleAssignments: true },
+  });
+
+  if (!appUser || appUser.roleAssignments.length === 0) {
+    await supabase.auth.signOut();
+    return { errors: { general: ["Profile not found."] } };
+  }
+
+  const roles = appUser.roleAssignments.map(ra => ra.role);
+  
+  if (roles.length > 1) {
+    redirect("/login");
+  } else {
+    const singleRole = roles[0];
+    const cookieStore = await cookies();
+    cookieStore.set({
+      name: "active_role",
+      value: singleRole,
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      path: "/",
+    });
+    redirect("/student");
+  }
 }
 
 // ─── signInAction ─────────────────────────────────────────────────────────────
@@ -218,30 +263,48 @@ export async function signInAction(
   // Fetch application role from Prisma — source of truth for authorization
   const appUser = await prisma.user.findUnique({
     where: { supabaseId: authData.user.id },
-    select: { role: true },
+    include: { roleAssignments: true },
   });
 
-  if (!appUser) {
-    // Auth user exists but no profile — shouldn't normally happen
+  if (!appUser || appUser.roleAssignments.length === 0) {
+    // Auth user exists but no profile or no roles
     await supabase.auth.signOut();
     return {
       errors: {
         general: [
-          "Account profile not found. Please contact support.",
+          "Account profile not found or no roles assigned. Please contact support.",
         ],
       },
     };
   }
+  
+  const cookieStore = await cookies();
+  cookieStore.delete("active_role");
 
-  // Redirect to role-appropriate dashboard
-  switch (appUser.role) {
-    case "ADMIN":
-      redirect("/admin");
-    case "TEACHER":
-      redirect("/teacher");
-    case "STUDENT":
-    default:
-      redirect("/student");
+  if (appUser.roleAssignments.length === 1) {
+    const singleRole = appUser.roleAssignments[0].role;
+    cookieStore.set({
+      name: "active_role",
+      value: singleRole,
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      path: "/",
+    });
+    
+    switch (singleRole) {
+      case "ADMIN":
+        redirect("/admin");
+      case "TEACHER":
+        redirect("/teacher");
+      case "STUDENT":
+      default:
+        redirect("/student");
+    }
+  } else {
+    // Redirect to /login to force a fresh RSC render with the newly set Supabase cookies.
+    // The LoginPage server component will detect the session and pass defaultRoleSelection to show the modal.
+    redirect("/login");
   }
 }
 
@@ -252,6 +315,9 @@ export async function signInAction(
  */
 export async function signOutAction(): Promise<void> {
   const supabase = await createClient();
+  const cookieStore = await cookies();
+  cookieStore.delete("active_role");
+  
   await supabase.auth.signOut();
   redirect("/login");
 }

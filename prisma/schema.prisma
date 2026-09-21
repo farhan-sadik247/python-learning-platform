@@ -18,17 +18,21 @@ model User {
   supabaseId String   @unique
   name       String
   email      String   @unique
-  role       UserRole @default(STUDENT)
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
 
-  progress Progress[]
+  roleAssignments UserRoleAssignment[]
+
+  progress       Progress[]
+  teacherCourses Course[]   @relation("TeacherCourses")
 }
 
 model Course {
   id          String   @id @default(cuid())
   title       String
   description String?
+  teacherId   String
+  teacher     User     @relation("TeacherCourses", fields: [teacherId], references: [id])
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
@@ -40,6 +44,8 @@ model Lesson {
   title       String
   description String?
   content     String
+  section     String?  // e.g., "Week 1 & 2"
+  driveUrl    String?  // For Google Drive preview
   order       Int
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
@@ -65,4 +71,16 @@ model Progress {
   updatedAt DateTime @updatedAt
 
   @@unique([userId, lessonId])
+}
+
+model UserRoleAssignment {
+  id        String   @id @default(cuid())
+  userId    String
+  role      UserRole
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, role])
+  @@index([role])
 }

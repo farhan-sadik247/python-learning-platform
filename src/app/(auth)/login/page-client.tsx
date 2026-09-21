@@ -2,14 +2,104 @@
 
 import { useActionState } from "react";
 import { signInAction } from "@/app/actions/auth";
+import { selectRoleAction } from "@/app/actions/role";
 import { AuthToggle } from "@/components/auth/auth-toggle";
 import Image from "next/image";
 import { Eye, EyeOff, Loader2, LogIn } from "lucide-react";
-import { useState } from "react";
+import { useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
+import type { UserRole } from "@/generated/prisma/client";
 
-export default function LoginPageClient() {
-  const [state, action, pending] = useActionState(signInAction, null);
+import type { AuthActionState } from "@/app/actions/auth";
+
+interface LoginPageClientProps {
+  initialState?: AuthActionState;
+  defaultRoleSelection?: {
+    availableRoles: UserRole[];
+  } | null;
+}
+
+export default function LoginPageClient({ initialState = null, defaultRoleSelection = null }: LoginPageClientProps = {}) {
+  const [state, action, pending] = useActionState(signInAction, initialState);
   const [showPassword, setShowPassword] = useState(false);
+  const [isPendingRole, startTransition] = useTransition();
+  const router = useRouter();
+
+  const handleRoleSelect = (role: UserRole) => {
+    startTransition(async () => {
+      const res = await selectRoleAction(role);
+      if (res.success) {
+        router.push(res.redirectTo);
+      }
+    });
+  };
+
+  const needsRoleSelection = state?.requiresRoleSelection || defaultRoleSelection !== null;
+  const availableRoles = state?.availableRoles || defaultRoleSelection?.availableRoles;
+
+  if (needsRoleSelection && availableRoles) {
+    return (
+      <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/95 backdrop-blur-sm animate-in fade-in duration-300">
+        <div className="w-full max-w-5xl space-y-8 bg-card p-8 md:p-12 rounded-2xl border border-border shadow-2xl">
+          <div className="text-center">
+            <h2 className="text-3xl font-bold tracking-tight text-foreground">
+              Choose your role
+            </h2>
+            <p className="mt-4 text-sm text-muted-foreground">
+              Select how you want to continue to the platform.
+            </p>
+          </div>
+
+          <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6">
+            {availableRoles.includes("ADMIN") && (
+              <button
+                type="button"
+                onClick={() => handleRoleSelect("ADMIN")}
+                disabled={isPendingRole}
+                className="w-full h-full group flex flex-col items-center p-6 border border-border rounded-2xl bg-background hover:bg-muted hover:border-[#00A8E8] transition-all disabled:opacity-50"
+              >
+                <div className="relative w-32 h-32 md:w-40 md:h-40 mb-6 overflow-hidden rounded-full border-4 border-border group-hover:border-[#00A8E8] transition-all bg-card">
+                  <Image src="/assets/admin-role.png" alt="Admin Role" fill sizes="(max-width: 768px) 128px, 160px" className="object-cover" />
+                </div>
+                <h3 className="text-xl font-semibold text-foreground group-hover:text-[#00A8E8] transition-colors">Administrator</h3>
+                <p className="text-sm text-muted-foreground mt-2 text-center">Manage the platform.</p>
+              </button>
+            )}
+
+            {availableRoles.includes("TEACHER") && (
+              <button
+                type="button"
+                onClick={() => handleRoleSelect("TEACHER")}
+                disabled={isPendingRole}
+                className="w-full h-full group flex flex-col items-center p-6 border border-border rounded-2xl bg-background hover:bg-muted hover:border-[#F4B400] transition-all disabled:opacity-50"
+              >
+                <div className="relative w-32 h-32 md:w-40 md:h-40 mb-6 overflow-hidden rounded-full border-4 border-border group-hover:border-[#F4B400] transition-all bg-card">
+                  <Image src="/assets/teacher-role.png" alt="Teacher Role" fill sizes="(max-width: 768px) 128px, 160px" className="object-cover" />
+                </div>
+                <h3 className="text-xl font-semibold text-foreground group-hover:text-[#F4B400] transition-colors">Teacher</h3>
+                <p className="text-sm text-muted-foreground mt-2 text-center">Create courses & lessons.</p>
+              </button>
+            )}
+
+            {availableRoles.includes("STUDENT") && (
+              <button
+                type="button"
+                onClick={() => handleRoleSelect("STUDENT")}
+                disabled={isPendingRole}
+                className="w-full h-full group flex flex-col items-center p-6 border border-border rounded-2xl bg-background hover:bg-muted hover:border-[#0077B6] transition-all disabled:opacity-50"
+              >
+                <div className="relative w-32 h-32 md:w-40 md:h-40 mb-6 overflow-hidden rounded-full border-4 border-border group-hover:border-[#0077B6] transition-all bg-card">
+                  <Image src="/assets/student-role.png" alt="Student Role" fill sizes="(max-width: 768px) 128px, 160px" className="object-cover" />
+                </div>
+                <h3 className="text-xl font-semibold text-foreground group-hover:text-[#0077B6] transition-colors">Student</h3>
+                <p className="text-sm text-muted-foreground mt-2 text-center">Learn Python & practice.</p>
+              </button>
+            )}
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="auth-page login-page">

@@ -45,10 +45,14 @@ function Button({
   size = "default",
   ...props
 }: ButtonPrimitive.Props & VariantProps<typeof buttonVariants>) {
+  // Base UI requires nativeButton={false} when rendering a non-button element via the render prop.
+  const nativeButton = props.nativeButton !== undefined ? props.nativeButton : (props.render ? false : true);
+
   return (
     <ButtonPrimitive
       data-slot="button"
       className={cn(buttonVariants({ variant, size, className }))}
+      nativeButton={nativeButton}
       {...props}
     />
   )

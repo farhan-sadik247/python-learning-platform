@@ -13,7 +13,11 @@ export default async function Home() {
     redirect("/login");
   }
 
-  switch (user.role) {
+  if (!user.activeRole) {
+    redirect("/login");
+  }
+
+  switch (user.activeRole) {
     case "ADMIN":
       redirect("/admin");
     case "TEACHER":
