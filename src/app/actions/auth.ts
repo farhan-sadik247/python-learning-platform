@@ -96,6 +96,7 @@ export async function signUpAction(
   });
 
   if (authError || !authData.user) {
+    console.error("Supabase signUp error:", authError);
     // Avoid leaking internal error details to the client
     return {
       errors: {
