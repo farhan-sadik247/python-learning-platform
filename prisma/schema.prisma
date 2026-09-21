@@ -25,6 +25,8 @@ model User {
 
   progress       Progress[]
   teacherCourses Course[]   @relation("TeacherCourses")
+  createdProblems Problem[]
+  submissions     Submission[]
 }
 
 model Course {
@@ -37,6 +39,7 @@ model Course {
   updatedAt   DateTime @updatedAt
 
   lessons Lesson[]
+  problems Problem[]
 }
 
 model Lesson {
@@ -54,6 +57,7 @@ model Lesson {
   course   Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
 
   progress Progress[]
+  problems Problem[]
 }
 
 model Progress {
@@ -83,4 +87,91 @@ model UserRoleAssignment {
 
   @@unique([userId, role])
   @@index([role])
+}
+
+enum ProblemDifficulty {
+  EASY
+  MEDIUM
+  HARD
+}
+
+model Problem {
+  id          String   @id @default(cuid())
+  title       String
+  description String
+  difficulty  ProblemDifficulty
+
+  starterCode String?
+  hints       String?
+
+  order       Int      @default(0)
+  isPublished Boolean  @default(true)
+
+  courseId    String?
+  lessonId    String?
+
+  createdById String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  course   Course? @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  lesson   Lesson? @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  createdBy User   @relation(fields: [createdById], references: [id], onDelete: Restrict)
+
+  testCases ProblemTestCase[]
+  submissions Submission[]
+
+  @@index([lessonId])
+  @@index([createdById])
+  @@index([difficulty])
+  @@index([isPublished])
+}
+
+model ProblemTestCase {
+  id        String  @id @default(cuid())
+
+  problemId String
+  problem   Problem @relation(fields: [problemId], references: [id], onDelete: Cascade)
+
+  input          String
+  expectedOutput String
+
+  isHidden  Boolean @default(false)
+  order     Int     @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([problemId])
+}
+enum SubmissionStatus {
+  ACCEPTED
+  WRONG_ANSWER
+  RUNTIME_ERROR
+  TIMEOUT
+  OUTPUT_LIMIT_EXCEEDED
+  INTERNAL_ERROR
+}
+
+model Submission {
+  id              String           @id @default(cuid())
+  userId          String
+  problemId       String
+  code            String
+  status          SubmissionStatus
+  score           Int
+  passedTests     Int
+  totalTests      Int
+  executionTimeMs Int
+
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+
+  user            User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  problem         Problem          @relation(fields: [problemId], references: [id], onDelete: Cascade)
+
+  @@index([userId, problemId])
+  @@index([problemId])
+  @@index([userId, createdAt])
 }

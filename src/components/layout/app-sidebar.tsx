@@ -2,53 +2,59 @@
 
 import * as React from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import type { UserRole } from "@/generated/prisma/client";
 import {
   LayoutDashboard,
   Users,
-  GraduationCap,
+
   BookOpen,
   Settings,
   Code,
   FileCode,
-  CheckCircle,
+
+  type LucideIcon,
 } from "lucide-react";
 
 interface AppSidebarProps {
   role: UserRole;
 }
 
+type SidebarLink = {
+  href: string;
+  label: string;
+  icon: LucideIcon;
+  disabled?: boolean;
+};
+
 export function AppSidebar({ role }: AppSidebarProps) {
   const pathname = usePathname();
   const [isCollapsed, setIsCollapsed] = React.useState(false);
 
-  const adminLinks = [
+  const adminLinks: SidebarLink[] = [
     { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
     { href: "/admin/courses", label: "Courses", icon: BookOpen },
-    { href: "#", label: "Users", icon: Users, disabled: true },
-    { href: "#", label: "Teachers", icon: GraduationCap, disabled: true },
-    { href: "#", label: "Students", icon: Users, disabled: true },
+    { href: "/admin/problems", label: "Problems", icon: Code },
+    { href: "/admin/submissions", label: "Submissions", icon: FileCode },
+    { href: "/admin/users", label: "Users", icon: Users },
     { href: "#", label: "Settings", icon: Settings, disabled: true },
   ];
 
-  const teacherLinks = [
+  const teacherLinks: SidebarLink[] = [
     { href: "/teacher", label: "Dashboard", icon: LayoutDashboard },
     { href: "/teacher/courses", label: "Courses & Lessons", icon: BookOpen },
-    { href: "#", label: "Problems", icon: Code, disabled: true },
-    { href: "#", label: "Assignments", icon: FileCode, disabled: true },
-    { href: "#", label: "Students", icon: Users, disabled: true },
-    { href: "#", label: "Progress", icon: CheckCircle, disabled: true },
+    { href: "/teacher/problems", label: "My Problems", icon: Code },
+    { href: "/teacher/submissions", label: "Submissions", icon: FileCode },
+    { href: "/teacher/students", label: "Students Progress", icon: Users },
   ];
 
-  const studentLinks = [
+  const studentLinks: SidebarLink[] = [
     { href: "/student", label: "Dashboard", icon: LayoutDashboard },
     { href: "/student/courses", label: "Available Courses", icon: BookOpen },
-    { href: "#", label: "My Learning", icon: BookOpen, disabled: true },
-    { href: "#", label: "Practice", icon: Code, disabled: true },
-    { href: "#", label: "Assignments", icon: FileCode, disabled: true },
-    { href: "#", label: "Progress", icon: CheckCircle, disabled: true },
+    { href: "/student/homeworks", label: "Homeworks", icon: BookOpen },
+    { href: "/student/submissions", label: "My Submissions", icon: FileCode },
   ];
 
   const links =
@@ -66,13 +72,13 @@ export function AppSidebar({ role }: AppSidebarProps) {
       <div className={cn("flex h-16 items-center border-b border-border transition-all duration-300", isCollapsed ? "justify-center px-0" : "justify-between px-4")}>
         {!isCollapsed && (
           <Link href="/" className="flex items-center gap-2 font-bold text-lg text-foreground overflow-hidden whitespace-nowrap">
-            <Code className="h-6 w-6 text-primary shrink-0" />
-            <span>Python Platform</span>
+            <Image src="/assets/python-logo.png" alt="Logo" width={24} height={24} className="shrink-0" />
+            <span>codeWithFarhan</span>
           </Link>
         )}
         {isCollapsed && (
           <Link href="/" className="flex items-center justify-center">
-            <Code className="h-6 w-6 text-primary shrink-0" />
+            <Image src="/assets/python-logo.png" alt="Logo" width={24} height={24} className="shrink-0" />
           </Link>
         )}
       </div>
