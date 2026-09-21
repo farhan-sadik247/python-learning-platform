@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import { cookies } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
 import { prisma } from "@/lib/prisma";
 import type { UserRole } from "@/generated/prisma/client";
@@ -10,7 +11,8 @@ export type AppUser = {
   supabaseId: string;
   name: string;
   email: string;
-  role: UserRole;
+  roleAssignments: UserRole[];
+  activeRole: UserRole | null;
   createdAt: Date;
   updatedAt: Date;
 };
@@ -38,13 +40,39 @@ export async function getCurrentUser(): Promise<AppUser | null> {
 
   const appUser = await prisma.user.findUnique({
     where: { supabaseId: supabaseUser.id },
+    include: { roleAssignments: true },
   });
 
   if (!appUser) {
     return null;
   }
 
-  return appUser;
+  const roleAssignments = appUser.roleAssignments.map(ra => ra.role);
+  
+  const cookieStore = await cookies();
+  const activeRoleCookie = cookieStore.get("active_role")?.value as UserRole | undefined;
+  
+  let activeRole: UserRole | null = null;
+  if (activeRoleCookie && roleAssignments.includes(activeRoleCookie)) {
+    activeRole = activeRoleCookie;
+  } else if (activeRoleCookie) {
+    try {
+      cookieStore.delete("active_role");
+    } catch {
+      // Ignore in server components where mutation is not allowed
+    }
+  }
+
+  return {
+    id: appUser.id,
+    supabaseId: appUser.supabaseId,
+    name: appUser.name,
+    email: appUser.email,
+    roleAssignments,
+    activeRole,
+    createdAt: appUser.createdAt,
+    updatedAt: appUser.updatedAt,
+  };
 }
 
 // ─── requireAuth ──────────────────────────────────────────────────────────────
@@ -79,9 +107,19 @@ export async function requireAuth(): Promise<AppUser> {
 export async function requireRole(allowedRoles: UserRole[]): Promise<AppUser> {
   const user = await requireAuth();
 
-  if (!allowedRoles.includes(user.role)) {
-    // Redirect to the user's own dashboard instead of a generic 403
-    switch (user.role) {
+  if (!user.activeRole) {
+    if (user.roleAssignments.length > 1) {
+      redirect("/login");
+    } else if (user.roleAssignments.length === 1) {
+      redirect("/login");
+    } else {
+      redirect("/login");
+    }
+  }
+
+  if (!allowedRoles.includes(user.activeRole)) {
+    // Redirect to the user's active dashboard instead of a generic 403
+    switch (user.activeRole) {
       case "ADMIN":
         redirect("/admin");
       case "TEACHER":

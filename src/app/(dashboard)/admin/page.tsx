@@ -13,16 +13,16 @@ export default async function AdminDashboardPage() {
 
   const [totalUsers, totalTeachers, totalStudents, totalCourses] = await Promise.all([
     prisma.user.count(),
-    prisma.user.count({ where: { role: "TEACHER" } }),
-    prisma.user.count({ where: { role: "STUDENT" } }),
+    prisma.user.count({ where: { roleAssignments: { some: { role: "TEACHER" } } } }),
+    prisma.user.count({ where: { roleAssignments: { some: { role: "STUDENT" } } } }),
     prisma.course.count(),
   ]);
 
   return (
     <div className="space-y-8">
       <div>
-        <h2 className="text-2xl font-bold tracking-tight text-white">Admin Dashboard</h2>
-        <p className="text-slate-400 mt-1">Manage your Python Learning Platform.</p>
+        <h2 className="text-2xl font-bold tracking-tight text-foreground">Admin Dashboard</h2>
+        <p className="text-muted-foreground mt-1">Manage your Python Learning Platform.</p>
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
@@ -50,7 +50,7 @@ export default async function AdminDashboardPage() {
 
       <div className="grid gap-6 md:grid-cols-2">
         <div className="space-y-4">
-          <h3 className="text-lg font-medium text-white">Quick Actions</h3>
+          <h3 className="text-lg font-medium text-foreground">Quick Actions</h3>
           <div className="grid gap-4">
             <EmptyState
               icon={Settings}
@@ -61,7 +61,7 @@ export default async function AdminDashboardPage() {
         </div>
 
         <div className="space-y-4">
-          <h3 className="text-lg font-medium text-white">Recent Activity</h3>
+          <h3 className="text-lg font-medium text-foreground">Recent Activity</h3>
           <EmptyState
             icon={Activity}
             title="No recent activity"

@@ -24,8 +24,8 @@ export default async function StudentDashboardPage() {
   return (
     <div className="space-y-8">
       <div>
-        <h2 className="text-2xl font-bold tracking-tight text-white">Welcome back, {firstName}</h2>
-        <p className="text-slate-400 mt-1">Continue learning Python and keep building your skills.</p>
+        <h2 className="text-2xl font-bold tracking-tight text-foreground">Welcome back, {firstName}</h2>
+        <p className="text-muted-foreground mt-1">Continue learning Python and keep building your skills.</p>
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
@@ -53,7 +53,7 @@ export default async function StudentDashboardPage() {
 
       <div className="grid gap-6 md:grid-cols-2">
         <div className="space-y-4">
-          <h3 className="text-lg font-medium text-white">Continue Learning</h3>
+          <h3 className="text-lg font-medium text-foreground">Continue Learning</h3>
           <EmptyState
             icon={BookOpen}
             title="No lessons available yet"
@@ -62,7 +62,7 @@ export default async function StudentDashboardPage() {
         </div>
 
         <div className="space-y-4">
-          <h3 className="text-lg font-medium text-white">Your Progress</h3>
+          <h3 className="text-lg font-medium text-foreground">Your Progress</h3>
           <EmptyState
             icon={Activity}
             title="No progress yet"

@@ -14,14 +14,14 @@ export default async function TeacherDashboardPage() {
   const [totalCourses, totalLessons, totalStudents] = await Promise.all([
     prisma.course.count(),
     prisma.lesson.count(),
-    prisma.user.count({ where: { role: "STUDENT" } }),
+    prisma.user.count({ where: { roleAssignments: { some: { role: "STUDENT" } } } }),
   ]);
 
   return (
     <div className="space-y-8">
       <div>
-        <h2 className="text-2xl font-bold tracking-tight text-white">Teacher Dashboard</h2>
-        <p className="text-slate-400 mt-1">Create lessons, practice problems, and track student progress.</p>
+        <h2 className="text-2xl font-bold tracking-tight text-foreground">Teacher Dashboard</h2>
+        <p className="text-muted-foreground mt-1">Create lessons, practice problems, and track student progress.</p>
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
@@ -49,7 +49,7 @@ export default async function TeacherDashboardPage() {
 
       <div className="grid gap-6 md:grid-cols-2">
         <div className="space-y-4">
-          <h3 className="text-lg font-medium text-white">My Courses</h3>
+          <h3 className="text-lg font-medium text-foreground">My Courses</h3>
           <EmptyState
             icon={BookOpen}
             title="No courses created yet"
@@ -58,7 +58,7 @@ export default async function TeacherDashboardPage() {
         </div>
 
         <div className="space-y-4">
-          <h3 className="text-lg font-medium text-white">Recent Student Activity</h3>
+          <h3 className="text-lg font-medium text-foreground">Recent Student Activity</h3>
           <EmptyState
             icon={Activity}
             title="No student activity yet"

@@ -19,7 +19,37 @@
   --py-gray: #94a3b8;
   --py-border: #263244;
 
-  /* shadcn overrides for dark platform theme */
+  --background: #ffffff;
+  --foreground: #020817;
+  --card: #ffffff;
+  --card-foreground: #020817;
+  --popover: #ffffff;
+  --popover-foreground: #020817;
+  --primary: #00a8e8;
+  --primary-foreground: #ffffff;
+  --secondary: #f1f5f9;
+  --secondary-foreground: #0f172a;
+  --muted: #f1f5f9;
+  --muted-foreground: #64748b;
+  --accent: #f1f5f9;
+  --accent-foreground: #0f172a;
+  --destructive: #ef4444;
+  --destructive-foreground: #f8fafc;
+  --border: #e2e8f0;
+  --input: #e2e8f0;
+  --ring: #00a8e8;
+  --radius: 0.625rem;
+
+  --sidebar: #ffffff;
+  --sidebar-foreground: #020817;
+  --sidebar-primary: #00a8e8;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #f1f5f9;
+  --sidebar-accent-foreground: #0f172a;
+  --sidebar-border: #e2e8f0;
+}
+
+.dark {
   --background: #0b1220;
   --foreground: #f8fafc;
   --card: #111827;
@@ -32,15 +62,14 @@
   --secondary-foreground: #f8fafc;
   --muted: #1f2937;
   --muted-foreground: #94a3b8;
-  --accent: #ffd43b;
-  --accent-foreground: #0b1220;
+  --accent: #1f2937;
+  --accent-foreground: #f8fafc;
   --destructive: #ef4444;
+  --destructive-foreground: #f8fafc;
   --border: #263244;
   --input: #1f2937;
   --ring: #00a8e8;
-  --radius: 0.625rem;
 
-  /* Sidebar (unused in phase 3 but keeping for future) */
   --sidebar: #111827;
   --sidebar-foreground: #f8fafc;
   --sidebar-primary: #00a8e8;
@@ -48,7 +77,6 @@
   --sidebar-accent: #1f2937;
   --sidebar-accent-foreground: #f8fafc;
   --sidebar-border: #263244;
-  --sidebar-ring: #00a8e8;
 }
 
 @theme inline {
@@ -121,7 +149,7 @@
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  background: var(--py-navy);
+  background: var(--background);
   animation: pageFlipIn 0.45s cubic-bezier(0.4, 0, 0.2, 1) both;
 }
 
@@ -163,8 +191,8 @@
   position: relative;
   display: flex;
   align-items: center;
-  background: var(--py-slate);
-  border: 1px solid var(--py-border);
+  background: var(--card);
+  border: 1px solid var(--border);
   border-radius: 999px;
   padding: 4px;
   gap: 0;
@@ -178,7 +206,7 @@
   font-family: "Inter", sans-serif;
   font-weight: 600;
   font-size: 0.875rem;
-  color: var(--py-gray);
+  color: var(--muted-foreground);
   background: transparent;
   border: none;
   cursor: pointer;
@@ -187,7 +215,7 @@
 }
 
 .auth-toggle-btn.active {
-  color: var(--py-navy);
+  color: var(--background);
 }
 
 /* Sliding pill */
@@ -196,7 +224,7 @@
   top: 4px;
   bottom: 4px;
   border-radius: 999px;
-  background: linear-gradient(135deg, var(--py-blue), var(--py-blue-dark));
+  background: linear-gradient(135deg, var(--primary), var(--primary));
   box-shadow: 0 0 16px rgba(0, 168, 232, 0.4);
   transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1),
     right 0.3s cubic-bezier(0.4, 0, 0.2, 1),
@@ -237,7 +265,7 @@
     rgba(0, 168, 232, 0.08) 0%,
     rgba(0, 119, 182, 0.04) 100%
   );
-  border-right: 1px solid var(--py-border);
+  border-right: 1px solid var(--border);
 }
 
 .auth-brand-panel.right {
@@ -246,7 +274,7 @@
     rgba(0, 168, 232, 0.08) 0%,
     rgba(0, 119, 182, 0.04) 100%
   );
-  border-left: 1px solid var(--py-border);
+  border-left: 1px solid var(--border);
 }
 
 /* Radial glow behind panel */
@@ -304,14 +332,14 @@
   font-family: "Inter", sans-serif;
   font-weight: 800;
   font-size: 1.5rem;
-  color: var(--py-white);
+  color: var(--foreground);
   margin: 0 0 0.5rem;
   line-height: 1.2;
 }
 
 .auth-brand-tagline {
   font-size: 0.9rem;
-  color: var(--py-gray);
+  color: var(--muted-foreground);
   margin: 0 0 1.75rem;
 }
 
@@ -327,7 +355,7 @@
   align-items: center;
   gap: 0.6rem;
   font-size: 0.825rem;
-  color: var(--py-gray);
+  color: var(--muted-foreground);
   text-align: left;
 }
 
@@ -336,7 +364,7 @@
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background: var(--py-blue);
+  background: var(--primary);
   box-shadow: 0 0 6px rgba(0, 168, 232, 0.6);
 }
 
@@ -362,13 +390,13 @@
   font-family: "Inter", sans-serif;
   font-weight: 800;
   font-size: 1.75rem;
-  color: var(--py-white);
+  color: var(--foreground);
   margin: 0 0 0.35rem;
 }
 
 .auth-form-subtitle {
   font-size: 0.9rem;
-  color: var(--py-gray);
+  color: var(--muted-foreground);
   margin: 0;
 }
 
@@ -405,7 +433,7 @@
 .auth-label {
   font-size: 0.8125rem;
   font-weight: 600;
-  color: var(--py-gray);
+  color: var(--muted-foreground);
   letter-spacing: 0.02em;
 }
 
@@ -418,10 +446,10 @@
 .auth-input {
   width: 100%;
   padding: 0.7rem 1rem;
-  background: var(--py-slate-light);
-  border: 1px solid var(--py-border);
+  background: var(--input);
+  border: 1px solid var(--border);
   border-radius: 10px;
-  color: var(--py-white);
+  color: var(--foreground);
   font-family: "Inter", sans-serif;
   font-size: 0.9rem;
   outline: none;
@@ -434,9 +462,9 @@
 }
 
 .auth-input:focus {
-  border-color: var(--py-blue);
+  border-color: var(--primary);
   box-shadow: 0 0 0 3px rgba(0, 168, 232, 0.18);
-  background: rgba(31, 41, 55, 0.9);
+  background: var(--background);
 }
 
 .auth-input.error {
@@ -461,7 +489,7 @@
   background: none;
   border: none;
   cursor: pointer;
-  color: var(--py-gray);
+  color: var(--muted-foreground);
   display: flex;
   align-items: center;
   padding: 0;
@@ -469,7 +497,7 @@
 }
 
 .auth-eye-btn:hover {
-  color: var(--py-white);
+  color: var(--foreground);
 }
 
 .auth-eye-icon {
@@ -492,8 +520,8 @@
   width: 100%;
   padding: 0.8rem 1.5rem;
   margin-top: 0.25rem;
-  background: linear-gradient(135deg, var(--py-yellow), var(--py-yellow-dark));
-  color: #0b1220;
+  background: linear-gradient(135deg, var(--primary), var(--primary));
+  color: var(--primary-foreground);
   border: none;
   border-radius: 10px;
   font-family: "Inter", sans-serif;
@@ -536,19 +564,19 @@
 .auth-switch-hint {
   text-align: center;
   font-size: 0.845rem;
-  color: var(--py-gray);
+  color: var(--muted-foreground);
   margin: 0;
 }
 
 .auth-switch-link {
-  color: var(--py-blue);
+  color: var(--primary);
   font-weight: 600;
   text-decoration: none;
   transition: color 0.2s ease;
 }
 
 .auth-switch-link:hover {
-  color: var(--py-white);
+  color: var(--foreground);
   text-decoration: underline;
 }
 
@@ -562,7 +590,7 @@
     padding: 2.5rem 1.5rem 1.5rem;
     border-right: none !important;
     border-left: none !important;
-    border-bottom: 1px solid var(--py-border);
+    border-bottom: 1px solid var(--border);
   }
 
   .auth-logo-wrap {
@@ -590,7 +618,7 @@
 
 .dashboard-page {
   min-height: 100vh;
-  background: var(--py-navy);
+  background: var(--background);
   display: flex;
   align-items: flex-start;
   justify-content: center;
@@ -635,13 +663,13 @@
 
 .dashboard-role-badge.teacher {
   background: rgba(0, 168, 232, 0.15);
-  color: var(--py-blue);
+  color: var(--primary);
   border: 1px solid rgba(0, 168, 232, 0.3);
 }
 
 .dashboard-role-badge.student {
   background: rgba(255, 212, 59, 0.12);
-  color: var(--py-yellow);
+  color: var(--primary);
   border: 1px solid rgba(255, 212, 59, 0.3);
 }
 
@@ -649,22 +677,22 @@
   font-family: "Inter", sans-serif;
   font-weight: 800;
   font-size: 2rem;
-  color: var(--py-white);
+  color: var(--foreground);
   margin: 0;
 }
 
 .dashboard-welcome {
   font-size: 0.9rem;
-  color: var(--py-gray);
+  color: var(--muted-foreground);
   margin: 0;
 }
 
 .dashboard-signout-btn {
   padding: 0.6rem 1.25rem;
   background: transparent;
-  border: 1px solid var(--py-border);
+  border: 1px solid var(--border);
   border-radius: 8px;
-  color: var(--py-gray);
+  color: var(--muted-foreground);
   font-family: "Inter", sans-serif;
   font-weight: 600;
   font-size: 0.85rem;
@@ -687,8 +715,8 @@
 }
 
 .dashboard-card {
-  background: var(--py-slate);
-  border: 1px solid var(--py-border);
+  background: var(--card);
+  border: 1px solid var(--border);
   border-radius: 16px;
   padding: 1.75rem;
 }
@@ -697,13 +725,13 @@
   font-family: "Inter", sans-serif;
   font-weight: 700;
   font-size: 1.1rem;
-  color: var(--py-white);
+  color: var(--foreground);
   margin: 0 0 0.6rem;
 }
 
 .dashboard-card-body {
   font-size: 0.9rem;
-  color: var(--py-gray);
+  color: var(--muted-foreground);
   line-height: 1.6;
   margin: 0;
 }
@@ -713,18 +741,18 @@
   align-items: center;
   gap: 0.75rem;
   padding: 0.75rem 1rem;
-  background: var(--py-slate-light);
-  border: 1px solid var(--py-border);
+  background: var(--input);
+  border: 1px solid var(--border);
   border-radius: 10px;
   font-size: 0.875rem;
 }
 
 .dashboard-info-label {
   font-weight: 600;
-  color: var(--py-gray);
+  color: var(--muted-foreground);
   min-width: 50px;
 }
 
 .dashboard-info-value {
-  color: var(--py-white);
+  color: var(--foreground);
 }
