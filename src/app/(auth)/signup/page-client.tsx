@@ -32,10 +32,10 @@ export default function SignupPageClient() {
             </div>
 
             <form action={action} className="auth-form" noValidate>
-              {/* Email confirmation required — success message */}
+              {/* Email confirmation required - success message */}
               {state?.message && (
                 <div className="auth-success-banner" role="status">
-                  ✉️ {state.message}
+                  ✅ {state.message}
                 </div>
               )}
 
