@@ -1,10 +1,11 @@
 import { requireRole } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { Button } from "@/components/ui/button";
-import Link from "next/link";
-import { ChevronLeft, ChevronRight } from "lucide-react";
 import { notFound } from "next/navigation";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { ChevronLeft, ChevronRight, Code, Trophy } from "lucide-react";
 import { LessonProgressButton } from "./lesson-progress-button";
+import { Badge } from "@/components/ui/badge";
 
 export default async function StudentLessonPage({
   params,
@@ -14,11 +15,18 @@ export default async function StudentLessonPage({
   const user = await requireRole(["STUDENT"]);
   const { courseId, lessonId } = await params;
 
+  // Verify the course and lesson exist
   const course = await prisma.course.findUnique({
     where: { id: courseId },
     include: {
       lessons: {
         orderBy: { order: "asc" },
+        include: {
+          problems: {
+            where: { isPublished: true },
+            orderBy: { order: "asc" },
+          }
+        }
       },
     },
   });
@@ -27,15 +35,16 @@ export default async function StudentLessonPage({
     notFound();
   }
 
-  const currentIndex = course.lessons.findIndex(l => l.id === lessonId);
-  if (currentIndex === -1) {
+  const lessonIndex = course.lessons.findIndex((l) => l.id === lessonId);
+  if (lessonIndex === -1) {
     notFound();
   }
 
-  const lesson = course.lessons[currentIndex];
-  const prevLesson = currentIndex > 0 ? course.lessons[currentIndex - 1] : null;
-  const nextLesson = currentIndex < course.lessons.length - 1 ? course.lessons[currentIndex + 1] : null;
+  const lesson = course.lessons[lessonIndex];
+  const prevLesson = lessonIndex > 0 ? course.lessons[lessonIndex - 1] : null;
+  const nextLesson = lessonIndex < course.lessons.length - 1 ? course.lessons[lessonIndex + 1] : null;
 
+  // Check if current lesson is completed
   const progress = await prisma.progress.findUnique({
     where: {
       userId_lessonId: {
@@ -46,6 +55,18 @@ export default async function StudentLessonPage({
   });
 
   const isCompleted = !!progress?.completed;
+
+  // Fetch solved problems for this lesson
+  const problemIds = lesson.problems.map(p => p.id);
+  const solvedSubmissions = await prisma.submission.findMany({
+    where: {
+      userId: user.id,
+      problemId: { in: problemIds },
+      status: 'ACCEPTED'
+    },
+    select: { problemId: true }
+  });
+  const solvedProblemIds = new Set(solvedSubmissions.map(s => s.problemId));
 
   return (
     <div className="max-w-4xl mx-auto space-y-6 pb-20">
@@ -145,6 +166,56 @@ export default async function StudentLessonPage({
             </div>
           )}
         </div>
+      </div>
+
+      <div className="bg-card rounded-lg overflow-hidden border border-border p-6 md:p-8">
+        <h3 className="text-xl font-bold text-foreground mb-4">Practice Problems</h3>
+        {lesson.problems && lesson.problems.length > 0 ? (
+          <div className="space-y-3">
+            {lesson.problems.map((problem) => {
+              const isSolved = solvedProblemIds.has(problem.id);
+              
+              return (
+                <Link key={problem.id} href={`/student/problems/${problem.id}`}>
+                  <div className="flex items-center justify-between p-4 rounded-lg border border-border bg-background hover:border-slate-700 transition-colors group cursor-pointer mb-3">
+                    <div className="flex items-center gap-4">
+                      <div className={`p-2 rounded-md ${isSolved ? 'bg-yellow-500/10' : 'bg-primary/10'}`}>
+                        {isSolved ? (
+                          <Trophy className="h-5 w-5 text-yellow-500" />
+                        ) : (
+                          <Code className="h-5 w-5 text-[#00A8E8]" />
+                        )}
+                      </div>
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <h4 className="font-medium text-foreground group-hover:text-[#00A8E8] transition-colors">{problem.title}</h4>
+                          {isSolved && (
+                            <Badge variant="outline" className="bg-yellow-500/10 text-yellow-500 border-yellow-500/20 text-[10px] h-5 py-0">Solved</Badge>
+                          )}
+                        </div>
+                        <p className="text-sm text-muted-foreground line-clamp-1 max-w-75 sm:max-w-md lg:max-w-lg mt-1">{problem.description}</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-4 shrink-0">
+                      <Badge variant="outline" className={`${
+                          problem.difficulty === 'EASY' ? 'text-green-500 border-green-500/20' :
+                          problem.difficulty === 'MEDIUM' ? 'text-yellow-500 border-yellow-500/20' :
+                          'text-red-500 border-red-500/20'
+                      }`}>
+                        {problem.difficulty}
+                      </Badge>
+                      <ChevronRight className="h-5 w-5 text-muted-foreground group-hover:text-foreground transition-colors hidden sm:block" />
+                    </div>
+                  </div>
+                </Link>
+              );
+            })}
+          </div>
+        ) : (
+          <div className="text-center p-8 border border-border border-dashed rounded-lg text-muted-foreground">
+            No practice problems available yet.
+          </div>
+        )}
       </div>
 
       <div className="flex items-center justify-between pt-6 border-t border-border">

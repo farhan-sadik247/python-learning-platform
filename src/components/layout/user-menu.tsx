@@ -8,10 +8,11 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
-import { LogOut, Settings, User } from "lucide-react";
+
+import { LogOut, User } from "lucide-react";
 import { signOutAction } from "@/app/actions/auth";
 import { AppUser } from "@/lib/auth";
+import Link from "next/link";
 
 interface UserMenuProps {
   user: AppUser;
@@ -38,34 +39,41 @@ export function UserMenu({ user }: UserMenuProps) {
           </AvatarFallback>
         </Avatar>
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="w-56 bg-card border-border text-slate-200" align="end">
-        <div className="px-2 py-1.5 font-normal">
-          <div className="flex flex-col space-y-1">
-            <p className="text-sm font-medium leading-none text-foreground">{user.name}</p>
-            <p className="text-xs leading-none text-muted-foreground">
+      <DropdownMenuContent className="w-64 p-2 bg-card border-border" align="end" sideOffset={8}>
+        <div className="flex items-center gap-3 px-2 py-3">
+          <Avatar className="h-10 w-10 border border-border">
+            <AvatarFallback className="bg-primary/10 text-primary font-medium">
+              {initials}
+            </AvatarFallback>
+          </Avatar>
+          <div className="flex flex-col space-y-1 overflow-hidden">
+            <p className="text-sm font-semibold leading-none text-foreground truncate">{user.name}</p>
+            <p className="text-xs leading-none text-muted-foreground truncate">
               {user.email}
             </p>
-            <p className="text-xs leading-none text-[#00A8E8] mt-1 font-semibold">
+            <p className="text-xs font-bold text-[#00A8E8] tracking-wide mt-1">
               {user.activeRole}
             </p>
           </div>
         </div>
-        <DropdownMenuSeparator className="bg-[#263244]" />
-        <DropdownMenuItem disabled className="cursor-not-allowed text-muted-foreground focus:bg-muted focus:text-muted-foreground">
-          <User className="mr-2 h-4 w-4" />
-          <span>Profile (Coming Soon)</span>
-        </DropdownMenuItem>
-        <DropdownMenuItem disabled className="cursor-not-allowed text-muted-foreground focus:bg-muted focus:text-muted-foreground">
-          <Settings className="mr-2 h-4 w-4" />
-          <span>Settings (Coming Soon)</span>
-        </DropdownMenuItem>
-        <DropdownMenuSeparator className="bg-[#263244]" />
+        
+        <DropdownMenuSeparator className="my-1 bg-border" />
+        
+        <Link href="/profile" className="w-full block">
+          <DropdownMenuItem className="cursor-pointer py-2.5 px-3 rounded-md transition-colors focus:bg-muted focus:text-foreground">
+            <User className="mr-2 h-4 w-4" />
+            <span className="font-medium">Profile</span>
+          </DropdownMenuItem>
+        </Link>
+        
+        <DropdownMenuSeparator className="my-1 bg-border" />
+        
         <DropdownMenuItem 
           onClick={() => signOutAction()}
-          className="text-destructive focus:bg-red-400/10 focus:text-red-300 cursor-pointer"
+          className="cursor-pointer py-2.5 px-3 rounded-md text-red-600 focus:bg-red-50 focus:text-red-700 dark:text-red-400 dark:focus:bg-red-950/50 dark:focus:text-red-300 transition-colors mt-1"
         >
           <LogOut className="mr-2 h-4 w-4" />
-          <span>Log out</span>
+          <span className="font-medium">Log out</span>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

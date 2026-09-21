@@ -5,6 +5,7 @@ import { AppSidebar } from "./app-sidebar";
 import { UserMenu } from "./user-menu";
 import { AppUser } from "@/lib/auth";
 import { ThemeToggle } from "@/components/theme-toggle";
+import Image from "next/image";
 
 interface AppHeaderProps {
   user: AppUser;
@@ -28,9 +29,12 @@ export function AppHeader({ user }: AppHeaderProps) {
 
       <div className="flex flex-1 gap-x-4 self-stretch lg:gap-x-6">
         <div className="flex flex-1 items-center justify-between">
-          <h1 className="text-sm font-semibold leading-6 text-foreground lg:hidden">
-            Python Platform
-          </h1>
+          <div className="flex items-center gap-2 lg:hidden">
+            <Image src="/assets/python-logo.png" alt="Logo" width={24} height={24} />
+            <h1 className="text-sm font-semibold leading-6 text-foreground">
+              codeWithFarhan
+            </h1>
+          </div>
           <div className="hidden lg:block flex-1" />
           <div className="flex items-center gap-x-4 lg:gap-x-6">
             <ThemeToggle />
