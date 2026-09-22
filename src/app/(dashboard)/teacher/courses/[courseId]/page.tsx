@@ -180,6 +180,16 @@ export default async function TeacherCourseDetailsPage({
           ))}
         </div>
       )}
+
+      {/* Floating Action Button */}
+      {course.lessons.length > 0 && (
+        <div className="fixed bottom-8 right-8 z-50 hidden md:block animate-in fade-in slide-in-from-bottom-4 duration-500">
+          <Button render={<Link href={`/teacher/courses/${course.id}/lessons/new`} />} size="icon" className="h-14 w-14 rounded-full shadow-lg shadow-[#00A8E8]/20 bg-[#00A8E8] hover:bg-[#0077B6] hover:scale-105 transition-all duration-200 text-white">
+            <Plus className="h-6 w-6" />
+            <span className="sr-only">Add Lesson</span>
+          </Button>
+        </div>
+      )}
     </div>
   );
 }

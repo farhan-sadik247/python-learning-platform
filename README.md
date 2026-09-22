@@ -519,13 +519,7 @@ NEXT_PUBLIC_SUPABASE_URL=
 NEXT_PUBLIC_SUPABASE_ANON_KEY=
 ```
 
-Python execution configuration:
 
-```env
-PYTHON_EXECUTABLE=
-PYTHON_EXECUTION_TIMEOUT_MS=
-PYTHON_MAX_OUTPUT_BYTES=
-```
 
 Never commit real credentials or secrets.
 
@@ -576,24 +570,15 @@ npm run build
 
 ## Production Considerations
 
-The current development Python execution engine uses a local process runner.
+The application uses the **Wandbox API** (`https://wandbox.org`) for completely isolated, sandboxed Python code execution. 
 
-For production, arbitrary student code should not execute directly inside the main Next.js environment.
-
-A production execution service should provide:
-
+Wandbox provides:
 - Container/process isolation
-- CPU limits
-- Memory limits
-- Execution timeout
-- Output limits
-- Network isolation
-- Temporary filesystem
-- Process cleanup
-- Concurrency controls
-- Abuse protection
+- Execution timeout and limits
+- Memory and network restrictions
+- Security against arbitrary command execution (RCE) on your deployment host
 
-The execution layer is designed to be replaceable without changing the student-facing coding workflow.
+Because of this, you do not need to install Python locally or bundle it in your Vercel deployment. Code execution works safely out-of-the-box in both development and production.
 
 ## Project Status
 

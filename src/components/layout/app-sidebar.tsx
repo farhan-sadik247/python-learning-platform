@@ -9,12 +9,12 @@ import type { UserRole } from "@/generated/prisma/client";
 import {
   LayoutDashboard,
   Users,
-
   BookOpen,
   Settings,
   Code,
   FileCode,
-
+  PanelLeftClose,
+  PanelLeftOpen,
   type LucideIcon,
 } from "lucide-react";
 
@@ -69,17 +69,30 @@ export function AppSidebar({ role }: AppSidebarProps) {
       "flex h-full flex-col bg-background border-r border-border text-muted-foreground transition-all duration-300 ease-in-out",
       isCollapsed ? "w-16" : "w-64"
     )}>
-      <div className={cn("flex h-16 items-center border-b border-border transition-all duration-300", isCollapsed ? "justify-center px-0" : "justify-between px-4")}>
-        {!isCollapsed && (
-          <Link href="/" className="flex items-center gap-2 font-bold text-lg text-foreground overflow-hidden whitespace-nowrap">
-            <Image src="/assets/python-logo.png" alt="Logo" width={24} height={24} className="shrink-0" />
-            <span>codeWithFarhan</span>
-          </Link>
-        )}
-        {isCollapsed && (
-          <Link href="/" className="flex items-center justify-center">
-            <Image src="/assets/python-logo.png" alt="Logo" width={24} height={24} className="shrink-0" />
-          </Link>
+      <div className={cn("flex items-center border-b border-border transition-all duration-300 shrink-0", isCollapsed ? "justify-center h-16 group cursor-pointer" : "h-16 flex-row justify-between px-4")}>
+        {isCollapsed ? (
+           <div 
+             className="relative flex items-center justify-center w-full h-full"
+             onClick={() => setIsCollapsed(false)}
+             title="Expand Sidebar"
+           >
+             <Image src="/assets/python-logo.png" alt="Logo" width={24} height={24} className="shrink-0 transition-all duration-200 group-hover:opacity-0 group-hover:scale-75" />
+             <PanelLeftOpen className="absolute h-5 w-5 text-muted-foreground opacity-0 scale-75 transition-all duration-200 group-hover:opacity-100 group-hover:scale-100" />
+           </div>
+        ) : (
+           <>
+             <Link href="/" className="flex items-center gap-2 font-bold text-lg text-foreground overflow-hidden whitespace-nowrap">
+               <Image src="/assets/python-logo.png" alt="Logo" width={24} height={24} className="shrink-0" />
+               <span>codeWithFarhan</span>
+             </Link>
+             <button
+               onClick={() => setIsCollapsed(true)}
+               className="p-1.5 rounded-md hover:bg-card text-muted-foreground hover:text-foreground transition-colors flex shrink-0"
+               title="Collapse Sidebar"
+             >
+               <PanelLeftClose className="h-5 w-5" />
+             </button>
+           </>
         )}
       </div>
 
@@ -120,23 +133,6 @@ export function AppSidebar({ role }: AppSidebarProps) {
           })}
         </ul>
       </nav>
-      
-      <div className="border-t border-border p-3 flex justify-center">
-         <button 
-           onClick={() => setIsCollapsed(!isCollapsed)} 
-           className="p-2 rounded-md hover:bg-card text-muted-foreground hover:text-foreground transition-colors w-full flex justify-center items-center gap-2"
-           title={isCollapsed ? "Expand Sidebar" : "Collapse Sidebar"}
-         >
-           {isCollapsed ? (
-             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m13 18 6-6-6-6"/><path d="m5 18 6-6-6-6"/></svg>
-           ) : (
-             <>
-               <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m11 18-6-6 6-6"/><path d="m19 18-6-6 6-6"/></svg>
-               <span className="text-sm font-medium">Collapse</span>
-             </>
-           )}
-         </button>
-      </div>
     </div>
   );
 }

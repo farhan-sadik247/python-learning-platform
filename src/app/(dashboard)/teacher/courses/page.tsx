@@ -53,7 +53,7 @@ export default async function TeacherCoursesPage() {
             <Card key={course.id} className="bg-background border-border hover:border-slate-700 transition-colors">
               <CardHeader>
                 <CardTitle className="text-foreground line-clamp-1">{course.title}</CardTitle>
-                <CardDescription className="text-muted-foreground line-clamp-2 min-h-[2.5rem]">
+                <CardDescription className="text-muted-foreground line-clamp-2 min-h-10">
                   {course.description || "No description provided."}
                 </CardDescription>
               </CardHeader>
@@ -69,6 +69,16 @@ export default async function TeacherCoursesPage() {
               </CardContent>
             </Card>
           ))}
+        </div>
+      )}
+
+      {/* Floating Action Button */}
+      {courses.length > 0 && (
+        <div className="fixed bottom-8 right-8 z-50 hidden md:block animate-in fade-in slide-in-from-bottom-4 duration-500">
+          <Button render={<Link href="/teacher/courses/new" />} size="icon" className="h-14 w-14 rounded-full shadow-lg shadow-[#00A8E8]/20 bg-[#00A8E8] hover:bg-[#0077B6] hover:scale-105 transition-all duration-200 text-white">
+            <Plus className="h-6 w-6" />
+            <span className="sr-only">Create Course</span>
+          </Button>
         </div>
       )}
     </div>

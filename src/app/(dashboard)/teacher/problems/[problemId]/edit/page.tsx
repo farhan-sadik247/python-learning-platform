@@ -4,6 +4,8 @@ import { notFound } from "next/navigation";
 import { ProblemForm } from "@/components/problems/problem-form";
 import { TestCaseManager } from "@/components/problems/test-case-manager";
 import { Button } from "@/components/ui/button";
+import Link from "next/link";
+import { ChevronLeft } from "lucide-react";
 import { deleteProblemAction } from "@/app/actions/problems";
 
 export default async function EditProblemPage({
@@ -43,9 +45,14 @@ export default async function EditProblemPage({
   return (
     <div className="max-w-3xl mx-auto space-y-8 pb-12">
       <div className="flex justify-between items-center">
-        <div>
-          <h2 className="text-2xl font-bold tracking-tight text-foreground">Edit Problem</h2>
-          <p className="text-muted-foreground">Update problem details and test cases.</p>
+        <div className="flex items-center gap-4">
+          <Button render={<Link href="/teacher/problems" />} variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground">
+            <ChevronLeft className="h-5 w-5" />
+          </Button>
+          <div>
+            <h2 className="text-2xl font-bold tracking-tight text-foreground">Edit Problem</h2>
+            <p className="text-muted-foreground">Update problem details and test cases.</p>
+          </div>
         </div>
         <form action={async () => {
           "use server";
